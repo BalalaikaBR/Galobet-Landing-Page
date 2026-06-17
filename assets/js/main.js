@@ -64,8 +64,16 @@ function initAgeGate() {
   });
 }
 
-// Init all
-document.addEventListener('DOMContentLoaded', function() {
+// Ensure initialization runs even if script loads after DOMContentLoaded
+function onReady(fn) {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fn);
+  } else {
+    fn();
+  }
+}
+
+onReady(function() {
   initOdds();
   initReveal();
   initAgeGate();
