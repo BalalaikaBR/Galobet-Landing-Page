@@ -1,40 +1,640 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GaloBet – Aposte com Garra</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/css/styles.css" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GaloBet – Aposte com Garra</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black:    #0a0a0a;
+    --surface:  #111218;
+    --card:     #16181f;
+    --border:   rgba(255,255,255,0.07);
+    --gold:     #f0b429;
+    --gold-dim: #a07820;
+    --green:    #1fc86b;
+    --red:      #ff3b5c;
+    --white:    #ffffff;
+    --muted:    #7a7f9a;
+    --font-display: 'Barlow Condensed', 'Oswald', sans-serif;
+    --font-body:    'Inter', sans-serif;
+    --radius:   12px;
+    --radius-lg: 20px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { text-decoration: none; color: inherit; }
+  ul { list-style: none; }
+  img { display: block; max-width: 100%; }
+
+  /* ─── AGE GATE ─── */
+  #ageGate {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.96);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+  }
+  .age-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 48px 40px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+  }
+  .age-logo {
+    font-family: var(--font-display);
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+  }
+  .age-logo span { color: var(--gold); }
+  .age-modal h2 { font-size: 1.4rem; margin-bottom: 12px; }
+  .age-modal p { color: var(--muted); font-size: .9rem; line-height: 1.6; margin-bottom: 32px; }
+  .age-buttons { display: flex; flex-direction: column; gap: 12px; }
+
+  /* ─── BUTTONS ─── */
+  .btn-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--gold);
+    color: var(--black);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: .875rem;
+    letter-spacing: .5px;
+    padding: 14px 28px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background .2s, transform .15s, box-shadow .2s;
+  }
+  .btn-primary:hover { background: #ffc835; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(240,180,41,.3); }
+  .btn-outline {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: transparent;
+    color: var(--white);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: .875rem;
+    padding: 13px 28px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.2);
+    cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .btn-outline:hover { border-color: rgba(255,255,255,.5); background: rgba(255,255,255,.05); }
+  .btn-ghost {
+    background: transparent; border: none;
+    color: var(--muted); font-size: .875rem; font-weight: 500; cursor: pointer;
+    padding: 8px; transition: color .2s;
+  }
+  .btn-ghost:hover { color: var(--white); }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+    background: rgba(10,10,10,.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+  .logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    font-size: .85rem; font-weight: 500; letter-spacing: .3px;
+    color: var(--muted); transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-right { display: flex; gap: 10px; align-items: center; }
+
+  /* ─── TICKER ─── */
+  .ticker-wrap {
+    margin-top: 64px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    padding: 10px 0;
+  }
+  .ticker-track {
+    display: flex; gap: 0;
+    animation: ticker 32s linear infinite;
+    white-space: nowrap;
+  }
+  .ticker-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .78rem; font-weight: 500;
+    color: var(--muted);
+    padding: 0 24px;
+    border-right: 1px solid var(--border);
+  }
+  .ticker-item strong { color: var(--gold); }
+  .ticker-live { color: var(--green); font-weight: 700; font-size: .7rem; letter-spacing: .5px; }
+  @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 120px 40px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 50% 10%, rgba(240,180,41,.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 80% 80%, rgba(31,200,107,.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image: 
+      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(240,180,41,.1);
+    border: 1px solid rgba(240,180,41,.25);
+    color: var(--gold);
+    font-size: .78rem; font-weight: 700; letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 16px; border-radius: 100px;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 9vw, 8rem);
+    font-weight: 900;
+    line-height: .95;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+    display: block;
+  }
+  .hero-sub {
+    font-size: clamp(.95rem, 2vw, 1.1rem);
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.65;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .hero-cta {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 64px;
+    position: relative;
+  }
+  .hero-cta .btn-primary { padding: 16px 36px; font-size: 1rem; }
+  .hero-cta .btn-outline { padding: 15px 36px; font-size: 1rem; }
+  .hero-stats {
+    display: flex; gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    position: relative;
+  }
+  .stat-item {
+    padding: 20px 36px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+    background: rgba(255,255,255,.03);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--font-display);
+    font-size: 2rem; font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { font-size: .75rem; color: var(--muted); font-weight: 500; letter-spacing: .5px; }
+
+  /* ─── TRUST BAR ─── */
+  .trust-bar {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 28px 40px;
+    display: flex; justify-content: center; align-items: center;
+    gap: 48px; flex-wrap: wrap;
+  }
+  .trust-item {
+    display: flex; align-items: center; gap: 10px;
+    font-size: .85rem; font-weight: 600; color: var(--muted);
+  }
+  .trust-icon { font-size: 1.2rem; }
+
+  /* ─── SECTION BASE ─── */
+  .section {
+    padding: 96px 40px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .section-full { padding: 96px 0; }
+  .section-label {
+    font-size: .72rem; font-weight: 700;
+    letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 24px; height: 2px;
+    background: var(--gold);
+    border-radius: 2px;
+  }
+  .section h2 {
+    font-family: var(--font-display);
+    font-size: clamp(2.4rem, 5vw, 4.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: -.5px;
+    margin-bottom: 48px;
+  }
+  .section h2 em { font-style: normal; color: var(--gold); }
+
+  /* ─── MATCHES ─── */
+  .matches-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .match-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .match-card:hover { border-color: rgba(240,180,41,.3); transform: translateY(-2px); }
+  .match-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.02);
+  }
+  .league-tag { font-size: .73rem; font-weight: 600; color: var(--muted); }
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,59,92,.1);
+    border: 1px solid rgba(255,59,92,.2);
+    color: var(--red);
+    font-size: .68rem; font-weight: 700; letter-spacing: 1px;
+    padding: 4px 10px; border-radius: 100px;
+    text-transform: uppercase;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse-red 1s infinite;
+  }
+  @keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:.3} }
+  .soon-badge {
+    background: rgba(255,255,255,.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: .68rem; font-weight: 600;
+    padding: 4px 10px; border-radius: 100px;
+  }
+  .match-body {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 20px;
+    gap: 12px;
+  }
+  .team { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+  .team-shield { font-size: 1.8rem; }
+  .team-name { font-size: .8rem; font-weight: 700; text-align: center; line-height: 1.2; }
+  .vs-block { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .vs-score {
+    font-family: var(--font-display);
+    font-size: 2rem; font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--white);
+    line-height: 1;
+  }
+  .vs-time { font-size: .65rem; font-weight: 700; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; }
+  .match-odds {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    padding: 12px 16px 16px;
+  }
+  .odd-btn {
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+  }
+  .odd-btn:hover { background: rgba(240,180,41,.12); border-color: rgba(240,180,41,.4); }
+  .odd-label { font-size: .63rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; letter-spacing: .5px; text-transform: uppercase; }
+  .odd-val { font-size: 1rem; font-weight: 700; color: var(--gold); font-family: var(--font-display); letter-spacing: .5px; }
+
+  /* ─── SPORTS TABS ─── */
+  .sports-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 80px 40px;
+  }
+  .sports-inner { max-width: 1280px; margin: 0 auto; }
+  .sports-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .tab {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: .83rem; font-weight: 600;
+    padding: 10px 20px; border-radius: 100px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .tab:hover { background: rgba(255,255,255,.08); color: var(--white); }
+  .tab.active {
+    background: var(--gold); color: var(--black);
+    border-color: var(--gold);
+  }
+  .tab-icon { font-size: 1rem; }
+
+  /* ─── PROMO BAND ─── */
+  .promo-wrap { padding: 0 40px; max-width: 1280px; margin: 0 auto; }
+  .promo-band {
+    background: linear-gradient(135deg, #1a1400 0%, #0f1a14 100%);
+    border: 1px solid rgba(240,180,41,.2);
+    border-radius: var(--radius-lg);
+    padding: 56px 60px;
+    display: flex; justify-content: space-between; align-items: center; gap: 48px;
+    position: relative; overflow: hidden;
+  }
+  .promo-band::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(240,180,41,.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .promo-text { position: relative; }
+  .promo-text h3 {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .promo-text h3 em { font-style: normal; color: var(--gold); }
+  .promo-text p { color: var(--muted); max-width: 360px; line-height: 1.6; margin-bottom: 28px; }
+  .promo-bonus { position: relative; text-align: center; flex-shrink: 0; }
+  .bonus-amount {
+    font-family: var(--font-display);
+    font-size: 5rem; font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(240,180,41,.4);
+  }
+  .bonus-label {
+    font-size: .7rem; font-weight: 700; letter-spacing: 2px;
+    color: var(--muted); text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ─── STEPS ─── */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .step-card {
+    background: var(--card);
+    padding: 40px 32px;
+    border-right: 1px solid var(--border);
+    transition: background .2s;
+    position: relative;
+  }
+  .step-card:last-child { border-right: none; }
+  .step-card:hover { background: rgba(240,180,41,.04); }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: .9rem; font-weight: 900;
+    color: var(--gold-dim);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  .step-icon { font-size: 2rem; margin-bottom: 16px; }
+  .step-title { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+  .step-desc { font-size: .83rem; color: var(--muted); line-height: 1.65; }
+  .step-connector {
+    position: absolute; top: 40px; right: -1px;
+    width: 1px; height: 32px;
+    background: var(--gold);
+    opacity: .3;
+  }
+
+  /* ─── BENEFITS ─── */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .benefit-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    transition: border-color .2s;
+  }
+  .benefit-card:hover { border-color: rgba(240,180,41,.3); }
+  .benefit-icon { font-size: 1.8rem; margin-bottom: 14px; }
+  .benefit-title { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
+  .benefit-desc { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+
+  /* ─── FAQ ─── */
+  .faq-wrap { max-width: 720px; margin: 0 auto; }
+  .faq-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .faq-q {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 24px;
+    font-size: .95rem; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  .faq-q:hover { background: rgba(255,255,255,.03); }
+  .faq-icon { font-size: 1.2rem; color: var(--gold); transition: transform .25s; }
+  .faq-a {
+    padding: 0 24px;
+    font-size: .85rem; color: var(--muted); line-height: 1.65;
+    max-height: 0; overflow: hidden;
+    transition: max-height .3s ease, padding .3s ease;
+  }
+  .faq-item.open .faq-a { max-height: 200px; padding: 0 24px 20px; }
+  .faq-item.open .faq-icon { transform: rotate(45deg); }
+
+  /* ─── FINAL CTA ─── */
+  .final-cta {
+    padding: 120px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 50%, rgba(240,180,41,.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .final-cta h2 {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: .95;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .final-cta h2 em { font-style: normal; color: var(--gold); display: block; }
+  .final-cta p { font-size: 1rem; color: var(--muted); max-width: 480px; margin: 0 auto 40px; line-height: 1.65; position: relative; }
+  .final-cta .btn-primary { padding: 18px 48px; font-size: 1rem; position: relative; }
+  .final-cta-note { font-size: .75rem; color: #4a5066; margin-top: 20px; position: relative; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 64px 40px 32px;
+  }
+  .footer-inner {
+    max-width: 1280px; margin: 0 auto;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+    margin-bottom: 48px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .footer-brand p { font-size: .85rem; color: var(--muted); line-height: 1.65; margin-top: 12px; max-width: 260px; }
+  .footer-col h4 { font-size: .78rem; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--white); margin-bottom: 16px; }
+  .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+  .footer-col a { font-size: .83rem; color: var(--muted); transition: color .2s; }
+  .footer-col a:hover { color: var(--white); }
+  .footer-bottom {
+    max-width: 1280px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+  }
+  .footer-bottom p { font-size: .75rem; color: #3a4055; }
+  .footer-responsible { display: flex; align-items: center; gap: 12px; }
+  .age-badge {
+    background: var(--gold); color: var(--black);
+    font-weight: 900; font-size: .7rem;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .resp-text { font-size: .72rem; color: #3a4055; max-width: 320px; line-height: 1.4; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 960px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 64px; }
+    .hero-stats { flex-direction: column; border: none; gap: 0; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat-item:last-child { border-bottom: none; }
+    .section { padding: 64px 24px; }
+    .steps-grid { grid-template-columns: 1fr 1fr; }
+    .step-card { border-bottom: 1px solid var(--border); }
+    .step-card:nth-child(even) { border-right: none; }
+    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .promo-band { flex-direction: column; padding: 40px 32px; text-align: center; }
+    .sports-section { padding: 56px 24px; }
+    .trust-bar { padding: 20px 24px; gap: 24px; }
+  }
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; }
+    .hero { padding: 90px 16px 56px; }
+    .section { padding: 56px 16px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .step-card { border-right: none; }
+    .matches-grid { grid-template-columns: 1fr; }
+    .footer-inner { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; align-items: flex-start; }
+    .promo-band { padding: 32px 20px; }
+    .final-cta { padding: 80px 16px; }
+    .promo-wrap { padding: 0 16px; }
+    .trust-bar { padding: 20px 16px; }
+    .sports-section { padding: 56px 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track { animation: none; }
+    * { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+  }
+</style>
 </head>
 <body>
 
+<!-- AGE GATE -->
 <div id="ageGate">
   <div class="age-modal">
-
-    <div class="age-logo">
-      GALO<span>BET</span>
-    </div>
-
-    <h2>🔞 Confirmação de Idade</h2>
-
-    <p>
-      Este conteúdo é destinado exclusivamente para maiores de 18 anos.
-      Ao continuar você confirma possuir idade legal para acessar a plataforma.
-    </p>
-
+    <div class="age-logo">GALO<span>BET</span></div>
+    <h2>Confirmação de Idade</h2>
+    <p>Este conteúdo é destinado exclusivamente para maiores de 18 anos. Ao continuar você confirma que tem idade legal para acessar a plataforma.</p>
     <div class="age-buttons">
-
-      <button id="confirmAge" class="btn-primary">
-        Tenho 18 anos ou mais
-      </button>
-
-      <button id="denyAge" class="btn-outline">
-        Sou menor de idade
-      </button>
-
+      <button id="confirmAge" class="btn-primary">Tenho 18 anos ou mais</button>
+      <button id="denyAge" class="btn-ghost">Sou menor de idade</button>
     </div>
-
   </div>
 </div>
 
@@ -47,33 +647,40 @@
     <li><a href="#bonus">Bônus</a></li>
     <li><a href="#como-funciona">Como Funciona</a></li>
   </ul>
-  <a href="#" class="btn-nav">Apostar Agora</a>
+  <div class="nav-right">
+    <button class="btn-ghost">Entrar</button>
+    <a href="#" class="btn-primary">Criar Conta</a>
+  </div>
 </nav>
 
 <!-- TICKER -->
-<div class="ticker-wrap" style="margin-top:64px;">
+<div class="ticker-wrap">
   <div class="ticker-track">
-    <span class="ticker-item">⚽ Flamengo vs Palmeiras <span class="ticker-sep">|</span> Odd: 2.10</span>
-    <span class="ticker-item">🏀 NBA Finals — OKC vs BOS <span class="ticker-sep">|</span> Odd: 1.85</span>
-    <span class="ticker-item">⚽ Real Madrid vs Barcelona <span class="ticker-sep">|</span> Odd: 3.40</span>
-    <span class="ticker-item">🎾 Roland Garros Final <span class="ticker-sep">|</span> Odd: 1.60</span>
-    <span class="ticker-item">⚽ Brasil vs Argentina <span class="ticker-sep">|</span> Odd: 2.75</span>
-    <span class="ticker-item">🏆 Libertadores — Quartas de Final <span class="ticker-sep">|</span> Ao Vivo</span>
-    <span class="ticker-item">⚽ Flamengo vs Palmeiras <span class="ticker-sep">|</span> Odd: 2.10</span>
-    <span class="ticker-item">🏀 NBA Finals — OKC vs BOS <span class="ticker-sep">|</span> Odd: 1.85</span>
-    <span class="ticker-item">⚽ Real Madrid vs Barcelona <span class="ticker-sep">|</span> Odd: 3.40</span>
-    <span class="ticker-item">🎾 Roland Garros Final <span class="ticker-sep">|</span> Odd: 1.60</span>
-    <span class="ticker-item">⚽ Brasil vs Argentina <span class="ticker-sep">|</span> Odd: 2.75</span>
-    <span class="ticker-item">🏆 Libertadores — Quartas de Final <span class="ticker-sep">|</span> Ao Vivo</span>
+    <span class="ticker-item">⚽ Framingo vs Valmeiras &nbsp;<strong>2.10</strong></span>
+    <span class="ticker-item">🏀 NBA Finals — OKC vs BOS &nbsp;<strong>1.85</strong></span>
+    <span class="ticker-item">⚽ Real Madruga vs Barcepena &nbsp;<strong>3.40</strong></span>
+    <span class="ticker-item">🎾 Roland Garros Final &nbsp;<strong>1.60</strong></span>
+    <span class="ticker-item">⚽ Brasgalo vs Argenfrango &nbsp;<strong>2.75</strong></span>
+    <span class="ticker-item">🏆 Libertadores — Quartas &nbsp;<span class="ticker-live">● AO VIVO</span></span>
+    <span class="ticker-item">⚽ Framingo vs Valmeiras &nbsp;<strong>2.10</strong></span>
+    <span class="ticker-item">🏀 NBA Finals — OKC vs BOS &nbsp;<strong>1.85</strong></span>
+    <span class="ticker-item">⚽ Real Madruga vs Barcepena &nbsp;<strong>3.40</strong></span>
+    <span class="ticker-item">🎾 Roland Garros Final &nbsp;<strong>1.60</strong></span>
+    <span class="ticker-item">⚽ Brasgalo vs Argenfrango &nbsp;<strong>2.75</strong></span>
+    <span class="ticker-item">🏆 Libertadores — Quartas &nbsp;<span class="ticker-live">● AO VIVO</span></span>
   </div>
 </div>
 
 <!-- HERO -->
 <section class="hero">
-  <span class="hero-eyebrow">🔥 Casa de Apostas #1 do Brasil</span>
-  <h1>O MAIOR DUELO DA NOITE<br><em>APOSTE AGORA.</em></h1>
+  <div class="hero-grid-bg"></div>
+  <span class="hero-eyebrow">🔥 Casa de Apostas #1 do Brasgalo</span>
+  <h1>
+    GANHE ATÉ R$500<br>
+    <em>NO 1º DEPÓSITO</em>
+  </h1>
   <p class="hero-sub">
-    Flamengo x Palmeiras. Odds especiais e apostas ao vivo para o confronto mais aguardado da rodada.
+    Framingo × Valmeiras. Odds especiais e apostas ao vivo no confronto mais aguardado da rodada.
   </p>
   <div class="hero-cta">
     <a href="#" class="btn-primary">Criar Conta Grátis</a>
@@ -92,262 +699,286 @@
       <div class="stat-num">5 min</div>
       <div class="stat-label">Tempo de saque</div>
     </div>
+    <div class="stat-item">
+      <div class="stat-num">4.9★</div>
+      <div class="stat-label">Avaliação</div>
+    </div>
   </div>
 </section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-item"><span class="trust-icon">⭐</span> 4.9/5 Avaliação</div>
+  <div class="trust-item"><span class="trust-icon">👥</span> +500.000 Usuários</div>
+  <div class="trust-item"><span class="trust-icon">💰</span> +R$100 Milhões Pagos</div>
+  <div class="trust-item"><span class="trust-icon">⚡</span> Saques via Pix</div>
+  <div class="trust-item"><span class="trust-icon">🔒</span> Plataforma Regulamentada</div>
+</div>
 
 <!-- JOGOS AO VIVO -->
-<section class="section" id="jogos">
-  <div class="section-label">Ao Vivo Agora</div>
-  <h2>DUELO DA <em>NOITE</em></h2>
+<div class="section-full">
+  <div class="section" id="jogos" style="padding-top:0">
+    <div class="section-label">Ao Vivo Agora</div>
+    <h2>RINHA DA <em>NOITE</em></h2>
+    <div class="matches-grid">
 
-  <div class="matches-grid">
+      <div class="match-card">
+        <div class="match-header">
+          <span class="league-tag">⚽ Brasgaloeirão Série A</span>
+          <span class="live-badge"><span class="live-dot"></span>AO VIVO · 67'</span>
+        </div>
+        <div class="match-body">
+          <div class="team"><div class="team-shield">🔴</div><div class="team-name">Framingo</div></div>
+          <div class="vs-block"><div class="vs-score">2 · 1</div><div class="vs-time">2º Tempo</div></div>
+          <div class="team"><div class="team-shield">🟢</div><div class="team-name">Valmeiras</div></div>
+        </div>
+        <div class="match-odds">
+          <div class="odd-btn"><div class="odd-label">FLA Vence</div><div class="odd-val">1.85</div></div>
+          <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">3.20</div></div>
+          <div class="odd-btn"><div class="odd-label">PAL Vence</div><div class="odd-val">4.10</div></div>
+        </div>
+      </div>
 
-    <!-- Card 1 -->
-    <div class="match-card">
-      <div class="match-header">
-        <span class="league-tag">⚽ Brasileirão Série A</span>
-        <span class="live-badge"><span class="live-dot"></span>AO VIVO · 67'</span>
-      </div>
-      <div class="match-body">
-        <div class="team">
-          <div class="team-shield">🔴</div>
-          <div class="team-name">Flamengo</div>
+      <div class="match-card">
+        <div class="match-header">
+          <span class="league-tag">🏆 Libertadores</span>
+          <span class="live-badge"><span class="live-dot"></span>AO VIVO · 34'</span>
         </div>
-        <div class="vs-block">
-          <div class="vs-score">2 · 1</div>
-          <div class="vs-time">2º TEMPO</div>
+        <div class="match-body">
+          <div class="team"><div class="team-shield">⚫</div><div class="team-name">Coringalos</div></div>
+          <div class="vs-block"><div class="vs-score">0 · 0</div><div class="vs-time">1º Tempo</div></div>
+          <div class="team"><div class="team-shield">🔵</div><div class="team-name">Bica Juniors</div></div>
         </div>
-        <div class="team">
-          <div class="team-shield">🟢</div>
-          <div class="team-name">Palmeiras</div>
+        <div class="match-odds">
+          <div class="odd-btn"><div class="odd-label">COR Vence</div><div class="odd-val">2.90</div></div>
+          <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">2.95</div></div>
+          <div class="odd-btn"><div class="odd-label">BOC Vence</div><div class="odd-val">2.40</div></div>
         </div>
       </div>
-      <div class="match-odds">
-        <div class="odd-btn"><div class="odd-label">1 FLA</div><div class="odd-val">1.85</div></div>
-        <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">3.20</div></div>
-        <div class="odd-btn"><div class="odd-label">2 PAL</div><div class="odd-val">4.10</div></div>
+
+      <div class="match-card">
+        <div class="match-header">
+          <span class="league-tag">⚽ La Liga</span>
+          <span class="soon-badge">🕐 Hoje · 21:00</span>
+        </div>
+        <div class="match-body">
+          <div class="team"><div class="team-shield">⚪</div><div class="team-name">Real Madruga</div></div>
+          <div class="vs-block"><div class="vs-score">VS</div><div class="vs-time">Pré-Jogo</div></div>
+          <div class="team"><div class="team-shield">🔵</div><div class="team-name">Barcepena</div></div>
+        </div>
+        <div class="match-odds">
+          <div class="odd-btn"><div class="odd-label">MAD Vence</div><div class="odd-val">2.15</div></div>
+          <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">3.40</div></div>
+          <div class="odd-btn"><div class="odd-label">BAR Vence</div><div class="odd-val">3.10</div></div>
+        </div>
       </div>
+
+      <div class="match-card">
+        <div class="match-header">
+          <span class="league-tag">🏀 NBA Finals</span>
+          <span class="live-badge"><span class="live-dot"></span>AO VIVO · Q3</span>
+        </div>
+        <div class="match-body">
+          <div class="team"><div class="team-shield">🔵</div><div class="team-name">OKC Galozão</div></div>
+          <div class="vs-block"><div class="vs-score">78 · 71</div><div class="vs-time">3º Quarto</div></div>
+          <div class="team"><div class="team-shield">⚪</div><div class="team-name">Boston Galticks</div></div>
+        </div>
+        <div class="match-odds">
+          <div class="odd-btn"><div class="odd-label">OKC Vence</div><div class="odd-val">1.55</div></div>
+          <div class="odd-btn"><div class="odd-label">+5.5 pts</div><div class="odd-val">1.90</div></div>
+          <div class="odd-btn"><div class="odd-label">BOS Vence</div><div class="odd-val">2.45</div></div>
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-header">
+          <span class="league-tag">⚽ Premier League</span>
+          <span class="soon-badge">🕐 Amanhã · 16:00</span>
+        </div>
+        <div class="match-body">
+          <div class="team"><div class="team-shield">🔴</div><div class="team-name">Galo United</div></div>
+          <div class="vs-block"><div class="vs-score">VS</div><div class="vs-time">Pré-Jogo</div></div>
+          <div class="team"><div class="team-shield">🔵</div><div class="team-name">Galo City</div></div>
+        </div>
+        <div class="match-odds">
+          <div class="odd-btn"><div class="odd-label">MU Vence</div><div class="odd-val">4.20</div></div>
+          <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">3.60</div></div>
+          <div class="odd-btn"><div class="odd-label">MC Vence</div><div class="odd-val">1.75</div></div>
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-header">
+          <span class="league-tag">🎾 Roland Garros</span>
+          <span class="live-badge"><span class="live-dot"></span>AO VIVO · 3º Set</span>
+        </div>
+        <div class="match-body">
+          <div class="team"><div class="team-shield">🇪🇸</div><div class="team-name">C. Alcaraz</div></div>
+          <div class="vs-block"><div class="vs-score">6·4 6·3</div><div class="vs-time">3º Set</div></div>
+          <div class="team"><div class="team-shield">🇩🇪</div><div class="team-name">A. Zverev</div></div>
+        </div>
+        <div class="match-odds">
+          <div class="odd-btn"><div class="odd-label">ALC Vence</div><div class="odd-val">1.22</div></div>
+          <div class="odd-btn"><div class="odd-label">+3.5 sets</div><div class="odd-val">1.90</div></div>
+          <div class="odd-btn"><div class="odd-label">ZVE Vence</div><div class="odd-val">4.80</div></div>
+        </div>
+      </div>
+
     </div>
-
-    <!-- Card 2 -->
-    <div class="match-card">
-      <div class="match-header">
-        <span class="league-tag">🏆 Libertadores</span>
-        <span class="live-badge"><span class="live-dot"></span>AO VIVO · 34'</span>
-      </div>
-      <div class="match-body">
-        <div class="team">
-          <div class="team-shield">⚫</div>
-          <div class="team-name">Corinthians</div>
-        </div>
-        <div class="vs-block">
-          <div class="vs-score">0 · 0</div>
-          <div class="vs-time">1º TEMPO</div>
-        </div>
-        <div class="team">
-          <div class="team-shield">🔵</div>
-          <div class="team-name">Boca Juniors</div>
-        </div>
-      </div>
-      <div class="match-odds">
-        <div class="odd-btn"><div class="odd-label">1 COR</div><div class="odd-val">2.90</div></div>
-        <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">2.95</div></div>
-        <div class="odd-btn"><div class="odd-label">2 BOC</div><div class="odd-val">2.40</div></div>
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="match-card">
-      <div class="match-header">
-        <span class="league-tag">⚽ La Liga</span>
-        <span class="soon-badge">🕐 Hoje · 21:00</span>
-      </div>
-      <div class="match-body">
-        <div class="team">
-          <div class="team-shield">⚪</div>
-          <div class="team-name">Real Madrid</div>
-        </div>
-        <div class="vs-block">
-          <div class="vs-score">VS</div>
-          <div class="vs-time">PRÉ-JOGO</div>
-        </div>
-        <div class="team">
-          <div class="team-shield">🔵</div>
-          <div class="team-name">Barcelona</div>
-        </div>
-      </div>
-      <div class="match-odds">
-        <div class="odd-btn"><div class="odd-label">1 MAD</div><div class="odd-val">2.15</div></div>
-        <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">3.40</div></div>
-        <div class="odd-btn"><div class="odd-label">2 BAR</div><div class="odd-val">3.10</div></div>
-      </div>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="match-card">
-      <div class="match-header">
-        <span class="league-tag">🏀 NBA</span>
-        <span class="live-badge"><span class="live-dot"></span>AO VIVO · Q3</span>
-      </div>
-      <div class="match-body">
-        <div class="team">
-          <div class="team-shield">🔵</div>
-          <div class="team-name">OKC Thunder</div>
-        </div>
-        <div class="vs-block">
-          <div class="vs-score">78 · 71</div>
-          <div class="vs-time">3º QTR</div>
-        </div>
-        <div class="team">
-          <div class="team-shield">⚪</div>
-          <div class="team-name">Boston Celtics</div>
-        </div>
-      </div>
-      <div class="match-odds">
-        <div class="odd-btn"><div class="odd-label">OKC</div><div class="odd-val">1.55</div></div>
-        <div class="odd-btn"><div class="odd-label">+5.5</div><div class="odd-val">1.90</div></div>
-        <div class="odd-btn"><div class="odd-label">BOS</div><div class="odd-val">2.45</div></div>
-      </div>
-    </div>
-
-    <!-- Card 5 -->
-    <div class="match-card">
-      <div class="match-header">
-        <span class="league-tag">⚽ Premier League</span>
-        <span class="soon-badge">🕐 Amanhã · 16:00</span>
-      </div>
-      <div class="match-body">
-        <div class="team">
-          <div class="team-shield">🔴</div>
-          <div class="team-name">Manchester United</div>
-        </div>
-        <div class="vs-block">
-          <div class="vs-score">VS</div>
-          <div class="vs-time">PRÉ-JOGO</div>
-        </div>
-        <div class="team">
-          <div class="team-shield">🔵</div>
-          <div class="team-name">Man City</div>
-        </div>
-      </div>
-      <div class="match-odds">
-        <div class="odd-btn"><div class="odd-label">1 MU</div><div class="odd-val">4.20</div></div>
-        <div class="odd-btn"><div class="odd-label">Empate</div><div class="odd-val">3.60</div></div>
-        <div class="odd-btn"><div class="odd-label">2 MC</div><div class="odd-val">1.75</div></div>
-      </div>
-    </div>
-
-    <!-- Card 6 -->
-    <div class="match-card">
-      <div class="match-header">
-        <span class="league-tag">🎾 Roland Garros</span>
-        <span class="live-badge"><span class="live-dot"></span>AO VIVO · 3º SET</span>
-      </div>
-      <div class="match-body">
-        <div class="team">
-          <div class="team-shield">🇪🇸</div>
-          <div class="team-name">C. Alcaraz</div>
-        </div>
-        <div class="vs-block">
-          <div class="vs-score">6·4 6·3</div>
-          <div class="vs-time">3º SET</div>
-        </div>
-        <div class="team">
-          <div class="team-shield">🇩🇪</div>
-          <div class="team-name">A. Zverev</div>
-        </div>
-      </div>
-      <div class="match-odds">
-        <div class="odd-btn"><div class="odd-label">ALC</div><div class="odd-val">1.22</div></div>
-        <div class="odd-btn"><div class="odd-label">+3.5</div><div class="odd-val">1.90</div></div>
-        <div class="odd-btn"><div class="odd-label">ZVE</div><div class="odd-val">4.80</div></div>
-      </div>
-    </div>
-
   </div>
-</section>
+</div>
 
 <!-- SPORTS TABS -->
 <div class="sports-section" id="esportes">
   <div class="sports-inner">
     <div class="section-label">Modalidades</div>
-    <h2 style="font-family:var(--font-display);font-size:clamp(2.4rem,5vw,4rem);line-height:1;letter-spacing:1px;margin-bottom:32px;">
-      GRANDE<br><em style="color:var(--gold);font-style:normal;">CONFRONTO</em>
+    <h2 style="font-family:var(--font-display);font-size:clamp(2.4rem,5vw,4rem);font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:32px;">
+      GRANDE <em style="font-style:normal;color:var(--gold)">CONFRONTO</em>
     </h2>
     <div class="sports-tabs">
-      <button class="tab active"><span class="tab-icon">⚽</span> Futebol</button>
-      <button class="tab"><span class="tab-icon">🏀</span> Basquete</button>
-      <button class="tab"><span class="tab-icon">🎾</span> Tênis</button>
-      <button class="tab"><span class="tab-icon">🏈</span> NFL</button>
-      <button class="tab"><span class="tab-icon">🏐</span> Vôlei</button>
-      <button class="tab"><span class="tab-icon">🎮</span> E-Sports</button>
-      <button class="tab"><span class="tab-icon">🥊</span> MMA / Boxe</button>
-      <button class="tab"><span class="tab-icon">🏎️</span> Fórmula 1</button>
+<button class="tab active"><span class="tab-icon">🐓</span> Galo Supremo</button>
+<button class="tab"><span class="tab-icon">🔥</span> Rinha Clássica</button>
+<button class="tab"><span class="tab-icon">⚡</span> Galo Relâmpago</button>
+<button class="tab"><span class="tab-icon">👑</span> Rei do Terreiro</button>
+<button class="tab"><span class="tab-icon">💀</span> Duelo Mortal</button>
+<button class="tab"><span class="tab-icon">🛡️</span> Galo Guerreiro</button>
+<button class="tab"><span class="tab-icon">🌪️</span> Tempestade de Penas</button>
+<button class="tab"><span class="tab-icon">🏆</span> Campeonato dos Galos</button>
     </div>
   </div>
 </div>
 
 <!-- PROMO BANNER -->
-<div style="padding: 72px 40px;" id="bonus">
-  <div class="promo-band">
-    <div class="promo-text">
-      <h3>MELHOR ODD DO<br><em>DIA</em></h3>
-      <p>Aproveite a oportunidade promocional mais atrativa do dia.<br>Odds especiais por tempo limitado.</p>
-      <a href="#" class="btn-primary" style="display:inline-block;margin-top:24px;">APOSTAR AGORA</a>
-    </div>
-    <div class="promo-bonus">
-      <div class="bonus-amount">4.20</div>
-      <div class="bonus-label">ODD PROMOCIONAL</div>
+<div style="padding:80px 40px" id="bonus">
+  <div class="promo-wrap" style="padding:0">
+    <div class="promo-band">
+      <div class="promo-text">
+        <h3>ODD DO GALO<br><em>CAMPEÃO</em></h3>
+        <p>Aproveite a odd promocional mais atrativa do dia. Oferta por tempo limitado — não perca.</p>
+        <a href="#" class="btn-primary">Apostar Agora</a>
+      </div>
+      <div class="promo-bonus">
+        <div class="bonus-amount">4.20</div>
+        <div class="bonus-label">Odd do Terreiro</div>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- COMO FUNCIONA -->
-<section class="section" id="como-funciona">
-  <div class="section-label">Simples assim</div>
-  <h2>COMO <em>FUNCIONA</em></h2>
-  <div class="steps-grid">
-    <div class="step-card">
-      <div class="step-num">01</div>
-      <div class="step-icon">📝</div>
-      <div class="step-title">Crie sua conta</div>
-      <div class="step-desc">Cadastro 100% gratuito em menos de 2 minutos. Apenas nome, e-mail e CPF.</div>
-    </div>
-    <div class="step-card">
-      <div class="step-num">02</div>
-      <div class="step-icon">💳</div>
-      <div class="step-title">Faça um depósito</div>
-      <div class="step-desc">Pix, cartão ou boleto. Saldo disponível na hora para começar a apostar.</div>
-    </div>
-    <div class="step-card">
-      <div class="step-num">03</div>
-      <div class="step-icon">🎯</div>
-      <div class="step-title">Escolha um jogo</div>
-      <div class="step-desc">Mais de 3.000 eventos por dia. Futebol, NBA, tênis, e-sports e muito mais.</div>
-    </div>
-    <div class="step-card">
-      <div class="step-num">04</div>
-      <div class="step-icon">💰</div>
-      <div class="step-title">Saque na hora</div>
-      <div class="step-desc">Ganhou? O saque cai na sua conta via Pix em menos de 5 minutos.</div>
+<div class="section-full" id="como-funciona">
+  <div class="section" style="padding-top:0">
+    <div class="section-label">Simples assim</div>
+    <h2>COMO <em>FUNCIONA</em></h2>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">📝</div>
+        <div class="step-title">Crie sua conta</div>
+        <div class="step-desc">Cadastro 100% gratuito em menos de 2 minutos. Apenas nome, e-mail e CPF.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">💳</div>
+        <div class="step-title">Faça um depósito</div>
+        <div class="step-desc">Pix, cartão ou boleto. Saldo disponível na hora para começar a apostar.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🎯</div>
+        <div class="step-title">Escolha um jogo</div>
+        <div class="step-desc">Mais de 3.000 eventos por dia entre futebol, NBA, tênis, e-sports e mais.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">💰</div>
+        <div class="step-title">Saque na hora</div>
+        <div class="step-desc">Ganhou? O valor cai na sua conta via Pix em menos de 5 minutos.</div>
+      </div>
     </div>
   </div>
-</section>
+</div>
+
+<!-- BENEFITS -->
+<div class="section-full" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="section" style="padding-top:96px">
+    <div class="section-label">Por que a GaloBet</div>
+    <h2>VANTAGENS <em>EXCLUSIVAS</em></h2>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">⚡</div>
+        <div class="benefit-title">Saque em 5 minutos</div>
+        <div class="benefit-desc">Pix aprovado na hora, 24h por dia, 7 dias por semana.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🎁</div>
+        <div class="benefit-title">Bônus de Boas-Vindas</div>
+        <div class="benefit-desc">100% no primeiro depósito até R$500. Sem complicações.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🔒</div>
+        <div class="benefit-title">Plataforma Segura</div>
+        <div class="benefit-desc">Regulamentada e licenciada. Seus dados e dinheiro protegidos.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">📱</div>
+        <div class="benefit-title">App Android e iOS</div>
+        <div class="benefit-desc">Aposte de qualquer lugar com o melhor app de apostas do Brasgalo.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="section" style="padding-bottom:96px">
+  <div class="section-label">Dúvidas</div>
+  <h2 style="text-align:center">PERGUNTAS <em>FREQUENTES</em></h2>
+  <div class="faq-wrap">
+    <div class="faq-item">
+      <div class="faq-q">Como faço um depósito? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Acesse sua conta, clique em "Depositar" e escolha entre Pix, cartão de crédito ou boleto bancário. O saldo cai na hora.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Quanto tempo demora o saque? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Via Pix, saques são processados em até 5 minutos. Via outros métodos, pode levar até 24 horas úteis.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Quais métodos de pagamento são aceitos? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Aceitamos Pix, boleto bancário, cartões de crédito e débito das principais bandeiras.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Como funciona o bônus de boas-vindas? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Ao criar sua conta e fazer o primeiro depósito, você recebe 100% do valor em bônus, até R$500. Consulte os termos completos na Central de Ajuda.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">A plataforma é regulamentada? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Sim. A GaloBet opera com licença regulamentada e segue todas as normas exigidas pelo Ministério da Fazenda do Brasgalo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL CTA -->
+<div class="final-cta">
+  <h2>PRONTO PARA<br><em>COMEÇAR?</em></h2>
+  <p>Crie sua conta gratuitamente agora e receba seu bônus de boas-vindas de até R$500.</p>
+  <a href="#" class="btn-primary">Criar Conta Grátis</a>
+  <p class="final-cta-note">Sem taxa de cadastro · Pix em 5 minutos · Regulamentado</p>
+</div>
 
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="footer-brand">
       <div class="logo">GALO<span>BET</span></div>
-      <p>A casa de apostas feita para quem leva o jogo a sério. Segura, rápida e regulamentada.</p>
+      <p>A casa de apostas feita para quem leva o jogo a sério. Segura, rápida e regulamentada pelo Ministério da Fazenda.</p>
     </div>
     <div class="footer-col">
       <h4>Esportes</h4>
       <ul>
-        <li><a href="#">Futebol</a></li>
-        <li><a href="#">Basquete</a></li>
-        <li><a href="#">Tênis</a></li>
-        <li><a href="#">E-Sports</a></li>
+        <li><a href="#">Galo Supremo</a></li>
+        <li><a href="#">Rinha Clássica</a></li>
+        <li><a href="#">Galo Relâmpago</a></li>
+        <li><a href="#">Galo Guerreiro</a></li>
         <li><a href="#">MMA</a></li>
       </ul>
     </div>
@@ -374,18 +1005,50 @@
   </div>
   <div class="footer-bottom">
     <p>© 2025 GaloBet. Todos os direitos reservados. Operado sob licença regulamentada.</p>
-    <span class="age-badge">+18</span>
+    <div class="footer-responsible">
+      <div class="age-badge">+18</div>
+      <p class="resp-text">Aposte com responsabilidade. Se o jogo deixar de ser divertido, busque ajuda. CVV: 188.</p>
+    </div>
   </div>
 </footer>
 
-  <script>
-    (function loadScript(url){
-      const s = document.createElement('script');
-      s.src = url;
-      s.defer = true;
-      document.body.appendChild(s);
-    })('assets/js/main.js');
-  </script>
+<script>
+// Age gate
+document.getElementById('confirmAge').addEventListener('click', function(){
+  document.getElementById('ageGate').style.opacity = '0';
+  document.getElementById('ageGate').style.transition = 'opacity .4s';
+  setTimeout(function(){ document.getElementById('ageGate').style.display = 'none'; }, 400);
+});
+document.getElementById('denyAge').addEventListener('click', function(){
+  window.location.href = 'https://www.google.com';
+});
 
+// Sports tabs
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click', function(){
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    tab.classList.add('active');
+  });
+});
+
+// Odd buttons
+document.querySelectorAll('.odd-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    btn.style.background = 'rgba(240,180,41,.2)';
+    btn.style.borderColor = 'rgba(240,180,41,.6)';
+    setTimeout(function(){ btn.style.background = ''; btn.style.borderColor = ''; }, 600);
+  });
+});
+
+// FAQ accordion
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click', function(){
+    var item = q.closest('.faq-item');
+    var wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(i){ i.classList.remove('open'); });
+    if(!wasOpen) item.classList.add('open');
+  });
+});
+</script>
 </body>
 </html>
