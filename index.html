@@ -293,6 +293,178 @@
   }
   .section h2 em { font-style: normal; color: var(--gold); }
 
+  /* ─── GALERIA DE IMAGENS ─── */
+  .galeria-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .galeria-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .galeria-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(240,180,41,.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,.5), 0 0 30px rgba(240,180,41,.1);
+  }
+  .galeria-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .galeria-card:hover img {
+    transform: scale(1.05);
+  }
+  .galeria-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 24px 24px;
+    background: linear-gradient(to top, rgba(0,0,0,.85) 30%, transparent 100%);
+    transition: padding .3s ease;
+  }
+  .galeria-card:hover .galeria-overlay {
+    padding-bottom: 32px;
+  }
+  .galeria-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    font-size: .65rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .galeria-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .galeria-subtitle {
+    font-size: .78rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .galeria-cta-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: .73rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .3s ease, transform .3s ease;
+  }
+  .galeria-card:hover .galeria-cta-mini {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .galeria-cta-mini .arrow {
+    transition: transform .2s ease;
+  }
+  .galeria-card:hover .galeria-cta-mini .arrow {
+    transform: translateX(4px);
+  }
+
+  /* ─── MODAL / LIGHTBOX ─── */
+  .galeria-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.94);
+    backdrop-filter: blur(12px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    cursor: pointer;
+  }
+  .galeria-modal.active {
+    display: flex;
+  }
+  .galeria-modal-content {
+    position: relative;
+    max-width: 800px;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: default;
+    animation: modalIn .3s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(.95) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .galeria-modal-content img {
+    width: 100%;
+    height: auto;
+    max-height: 75vh;
+    object-fit: contain;
+    background: var(--surface);
+  }
+  .galeria-modal-info {
+    background: var(--card);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .galeria-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .galeria-modal-subtitle {
+    font-size: .8rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .galeria-modal-close {
+    background: rgba(255,255,255,.1);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .8rem;
+    transition: background .2s;
+  }
+  .galeria-modal-close:hover {
+    background: rgba(255,59,92,.2);
+    border-color: rgba(255,59,92,.4);
+  }
+
   /* ─── MATCHES ─── */
   .matches-grid {
     display: grid;
@@ -600,6 +772,7 @@
     .promo-band { flex-direction: column; padding: 40px 32px; text-align: center; }
     .sports-section { padding: 56px 24px; }
     .trust-bar { padding: 20px 24px; gap: 24px; }
+    .galeria-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 600px) {
     nav { padding: 0 16px; }
@@ -615,6 +788,7 @@
     .promo-wrap { padding: 0 16px; }
     .trust-bar { padding: 20px 16px; }
     .sports-section { padding: 56px 16px; }
+    .galeria-grid { grid-template-columns: 1fr; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -642,6 +816,7 @@
 <nav>
   <div class="logo">GALO<span>BET</span></div>
   <ul class="nav-links">
+    <li><a href="#destaques">Destaques</a></li>
     <li><a href="#jogos">Jogos</a></li>
     <li><a href="#esportes">Esportes</a></li>
     <li><a href="#bonus">Bônus</a></li>
@@ -684,7 +859,7 @@
   </p>
   <div class="hero-cta">
     <a href="#" class="btn-primary">Criar Conta Grátis</a>
-    <a href="#jogos" class="btn-outline">Ver Jogos de Hoje</a>
+    <a href="#destaques" class="btn-outline">Ver Destaques da Noite</a>
   </div>
   <div class="hero-stats">
     <div class="stat-item">
@@ -713,6 +888,65 @@
   <div class="trust-item"><span class="trust-icon">💰</span> +R$100 Milhões Pagos</div>
   <div class="trust-item"><span class="trust-icon">⚡</span> Saques via Pix</div>
   <div class="trust-item"><span class="trust-icon">🔒</span> Plataforma Regulamentada</div>
+</div>
+
+<!-- O MELHOR DA NOITE (GALERIA DE IMAGENS) -->
+<div class="galeria-section section-full" id="destaques">
+  <div class="section">
+    <div class="section-label">Coleção Exclusiva</div>
+    <h2>O MELHOR DA <em>NOITE</em></h2>
+    <p style="color:var(--muted); font-size:.85rem; margin-top:-36px; margin-bottom:36px;">👆 Clique nas imagens para ampliar</p>
+    <div class="galeria-grid">
+
+      <!-- ITEM 1 -->
+      <div class="galeria-card" onclick="openModal('assets/galo1.jpeg', 'Galo Supremo', 'Edição Limitada 2025')">
+        <img src="assets/galo1.jpeg" alt="Galo 1" loading="lazy">
+        <div class="galeria-overlay">
+          <span class="galeria-tag">Novo</span>
+          <div class="galeria-title">Galo Supremo</div>
+          <div class="galeria-subtitle">Edição Limitada 2025</div>
+          <span class="galeria-cta-mini">Clique para ampliar <span class="arrow">→</span></span>
+        </div>
+      </div>
+
+      <!-- ITEM 2 -->
+      <div class="galeria-card" onclick="openModal('assets/galo2.png', 'Galo Guerreiro', 'Coleção Rinha')">
+        <img src="assets/galo2.png" alt="Galo 2" loading="lazy">
+        <div class="galeria-overlay">
+          <span class="galeria-tag">Destaque</span>
+          <div class="galeria-title">Galo Guerreiro</div>
+          <div class="galeria-subtitle">Coleção Rinha</div>
+          <span class="galeria-cta-mini">Clique para ampliar <span class="arrow">→</span></span>
+        </div>
+      </div>
+
+      <!-- ITEM 3 -->
+      <div class="galeria-card" onclick="openModal('assets/galo3.png', 'Galo Relâmpago', 'Performance Máxima')">
+        <img src="assets/galo3.png" alt="Galo 3" loading="lazy">
+        <div class="galeria-overlay">
+          <span class="galeria-tag">Premium</span>
+          <div class="galeria-title">Galo Relâmpago</div>
+          <div class="galeria-subtitle">Performance Máxima</div>
+          <span class="galeria-cta-mini">Clique para ampliar <span class="arrow">→</span></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL / LIGHTBOX -->
+<div class="galeria-modal" id="galeriaModal" onclick="closeModal()">
+  <div class="galeria-modal-content" onclick="event.stopPropagation()">
+    <img id="modalImg" src="" alt="Imagem ampliada">
+    <div class="galeria-modal-info">
+      <div>
+        <div class="galeria-modal-title" id="modalTitle"></div>
+        <div class="galeria-modal-subtitle" id="modalSubtitle"></div>
+      </div>
+      <button class="galeria-modal-close" onclick="closeModal()">✕ Fechar</button>
+    </div>
+  </div>
 </div>
 
 <!-- JOGOS AO VIVO -->
@@ -833,17 +1067,17 @@
   <div class="sports-inner">
     <div class="section-label">Modalidades</div>
     <h2 style="font-family:var(--font-display);font-size:clamp(2.4rem,5vw,4rem);font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:32px;">
-      GRANDE <em style="font-style:normal;color:var(--gold)">CONFRONTO</em>
+      ESCOLHA SEU <em style="font-style:normal;color:var(--gold)">ESPORTE</em>
     </h2>
     <div class="sports-tabs">
-<button class="tab active"><span class="tab-icon">🐓</span> Galo Supremo</button>
-<button class="tab"><span class="tab-icon">🔥</span> Rinha Clássica</button>
-<button class="tab"><span class="tab-icon">⚡</span> Galo Relâmpago</button>
-<button class="tab"><span class="tab-icon">👑</span> Rei do Terreiro</button>
-<button class="tab"><span class="tab-icon">💀</span> Duelo Mortal</button>
-<button class="tab"><span class="tab-icon">🛡️</span> Galo Guerreiro</button>
-<button class="tab"><span class="tab-icon">🌪️</span> Tempestade de Penas</button>
-<button class="tab"><span class="tab-icon">🏆</span> Campeonato dos Galos</button>
+<button class="tab active"><span class="tab-icon">⚽</span> Futebol</button>
+<button class="tab"><span class="tab-icon">🏀</span> Basquete</button>
+<button class="tab"><span class="tab-icon">🎾</span> Tênis</button>
+<button class="tab"><span class="tab-icon">🎮</span> e-Sports</button>
+<button class="tab"><span class="tab-icon">🥊</span> MMA</button>
+<button class="tab"><span class="tab-icon">🏐</span> Vôlei</button>
+<button class="tab"><span class="tab-icon">🏈</span> Futebol Americano</button>
+<button class="tab"><span class="tab-icon">🏎️</span> Fórmula 1</button>
     </div>
   </div>
 </div>
@@ -959,7 +1193,7 @@
 
 <!-- FINAL CTA -->
 <div class="final-cta">
-  <h2>PRONTO PARA<br><em>COMEÇAR?</em></h2>
+  <h2>PRONTO PARA<br><em>APOSTAR?</em></h2>
   <p>Crie sua conta gratuitamente agora e receba seu bônus de boas-vindas de até R$500.</p>
   <a href="#" class="btn-primary">Criar Conta Grátis</a>
   <p class="final-cta-note">Sem taxa de cadastro · Pix em 5 minutos · Regulamentado</p>
@@ -975,10 +1209,10 @@
     <div class="footer-col">
       <h4>Esportes</h4>
       <ul>
-        <li><a href="#">Galo Supremo</a></li>
-        <li><a href="#">Rinha Clássica</a></li>
-        <li><a href="#">Galo Relâmpago</a></li>
-        <li><a href="#">Galo Guerreiro</a></li>
+        <li><a href="#">Futebol</a></li>
+        <li><a href="#">Basquete</a></li>
+        <li><a href="#">Tênis</a></li>
+        <li><a href="#">e-Sports</a></li>
         <li><a href="#">MMA</a></li>
       </ul>
     </div>
@@ -1021,6 +1255,25 @@ document.getElementById('confirmAge').addEventListener('click', function(){
 });
 document.getElementById('denyAge').addEventListener('click', function(){
   window.location.href = 'https://www.google.com';
+});
+
+// Modal / Lightbox
+function openModal(imgSrc, title, subtitle) {
+  document.getElementById('modalImg').src = imgSrc;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalSubtitle').textContent = subtitle;
+  document.getElementById('galeriaModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('galeriaModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Fechar modal com tecla ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
 });
 
 // Sports tabs

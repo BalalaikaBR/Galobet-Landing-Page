@@ -7,7 +7,7 @@ document.querySelectorAll('.tab').forEach(tab => {
   });
 });
 
-// Odd button toggle
+// Odd button t
 function initOdds() {
   document.querySelectorAll('.odd-btn').forEach(btn => {
     btn.addEventListener('click', () => {
