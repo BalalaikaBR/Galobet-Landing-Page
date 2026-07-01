@@ -293,6 +293,178 @@
   }
   .section h2 em { font-style: normal; color: var(--gold); }
 
+  /* ─── PEÇAS / GALERIA ─── */
+  .pecas-section {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .pecas-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .peca-card {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 4 / 5;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+  }
+  .peca-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(240,180,41,.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,.5), 0 0 30px rgba(240,180,41,.1);
+  }
+  .peca-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .peca-card:hover img {
+    transform: scale(1.05);
+  }
+  .peca-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 32px 24px 24px;
+    background: linear-gradient(to top, rgba(0,0,0,.85) 30%, transparent 100%);
+    transition: padding .3s ease;
+  }
+  .peca-card:hover .peca-overlay {
+    padding-bottom: 32px;
+  }
+  .peca-tag {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    font-size: .65rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+  .peca-title {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.1;
+    margin-bottom: 6px;
+  }
+  .peca-subtitle {
+    font-size: .78rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .peca-cta-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: .73rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity .3s ease, transform .3s ease;
+  }
+  .peca-card:hover .peca-cta-mini {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .peca-cta-mini .arrow {
+    transition: transform .2s ease;
+  }
+  .peca-card:hover .peca-cta-mini .arrow {
+    transform: translateX(4px);
+  }
+
+  /* ─── MODAL / LIGHTBOX ─── */
+  .peca-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.94);
+    backdrop-filter: blur(12px);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    cursor: pointer;
+  }
+  .peca-modal.active {
+    display: flex;
+  }
+  .peca-modal-content {
+    position: relative;
+    max-width: 800px;
+    width: 100%;
+    max-height: 85vh;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    cursor: default;
+    animation: modalIn .3s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(.95) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .peca-modal-content img {
+    width: 100%;
+    height: auto;
+    max-height: 75vh;
+    object-fit: contain;
+    background: var(--surface);
+  }
+  .peca-modal-info {
+    background: var(--card);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .peca-modal-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .peca-modal-subtitle {
+    font-size: .8rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .peca-modal-close {
+    background: rgba(255,255,255,.1);
+    border: 1px solid var(--border);
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: .8rem;
+    transition: background .2s;
+  }
+  .peca-modal-close:hover {
+    background: rgba(255,59,92,.2);
+    border-color: rgba(255,59,92,.4);
+  }
+
   /* ─── MATCHES ─── */
   .matches-grid {
     display: grid;
@@ -600,6 +772,7 @@
     .promo-band { flex-direction: column; padding: 40px 32px; text-align: center; }
     .sports-section { padding: 56px 24px; }
     .trust-bar { padding: 20px 24px; gap: 24px; }
+    .pecas-grid { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 600px) {
     nav { padding: 0 16px; }
@@ -615,6 +788,7 @@
     .promo-wrap { padding: 0 16px; }
     .trust-bar { padding: 20px 16px; }
     .sports-section { padding: 56px 16px; }
+    .pecas-grid { grid-template-columns: 1fr; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -643,6 +817,7 @@
   <div class="logo">GALO<span>BET</span></div>
   <ul class="nav-links">
     <li><a href="#jogos">Jogos</a></li>
+    <li><a href="#pecas">DOIDO</a></li>
     <li><a href="#esportes">Esportes</a></li>
     <li><a href="#bonus">Bônus</a></li>
     <li><a href="#como-funciona">Como Funciona</a></li>
@@ -713,6 +888,65 @@
   <div class="trust-item"><span class="trust-icon">💰</span> +R$100 Milhões Pagos</div>
   <div class="trust-item"><span class="trust-icon">⚡</span> Saques via Pix</div>
   <div class="trust-item"><span class="trust-icon">🔒</span> Plataforma Regulamentada</div>
+</div>
+
+<!-- SEÇÃO DE PEÇAS -->
+<div class="pecas-section section-full" id="pecas">
+  <div class="section">
+    <div class="section-label">Coleção Exclusiva</div>
+    <h2>PEÇAS <em>GALO</em></h2>
+    <p style="color:var(--muted); font-size:.85rem; margin-top:-36px; margin-bottom:36px;">👆 Clique nas imagens para ampliar</p>
+    <div class="pecas-grid">
+
+      <!-- PEÇA 1 -->
+      <div class="peca-card" onclick="openModal('assets/galo1.jpeg', 'Galo Supremo', 'Edição Limitada 2025')">
+        <img src="assets/galo1.jpeg" alt="Peça Galo 1" loading="lazy">
+        <div class="peca-overlay">
+          <span class="peca-tag">Novo</span>
+          <div class="peca-title">Galo Supremo</div>
+          <div class="peca-subtitle">Edição Limitada 2025</div>
+          <span class="peca-cta-mini">Clique para ampliar <span class="arrow">→</span></span>
+        </div>
+      </div>
+
+      <!-- PEÇA 2 -->
+      <div class="peca-card" onclick="openModal('assets/galo2.png', 'Galo Guerreiro', 'Coleção Rinha')">
+        <img src="assets/galo2.png" alt="Peça Galo 2" loading="lazy">
+        <div class="peca-overlay">
+          <span class="peca-tag">Destaque</span>
+          <div class="peca-title">Galo Guerreiro</div>
+          <div class="peca-subtitle">Coleção Rinha</div>
+          <span class="peca-cta-mini">Clique para ampliar <span class="arrow">→</span></span>
+        </div>
+      </div>
+
+      <!-- PEÇA 3 -->
+      <div class="peca-card" onclick="openModal('assets/galo3.png', 'Galo Relâmpago', 'Performance Máxima')">
+        <img src="assets/galo3.png" alt="Peça Galo 3" loading="lazy">
+        <div class="peca-overlay">
+          <span class="peca-tag">Premium</span>
+          <div class="peca-title">Galo Relâmpago</div>
+          <div class="peca-subtitle">Performance Máxima</div>
+          <span class="peca-cta-mini">Clique para ampliar <span class="arrow">→</span></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL / LIGHTBOX -->
+<div class="peca-modal" id="pecaModal" onclick="closeModal()">
+  <div class="peca-modal-content" onclick="event.stopPropagation()">
+    <img id="modalImg" src="" alt="Peça ampliada">
+    <div class="peca-modal-info">
+      <div>
+        <div class="peca-modal-title" id="modalTitle"></div>
+        <div class="peca-modal-subtitle" id="modalSubtitle"></div>
+      </div>
+      <button class="peca-modal-close" onclick="closeModal()">✕ Fechar</button>
+    </div>
+  </div>
 </div>
 
 <!-- JOGOS AO VIVO -->
@@ -1021,6 +1255,25 @@ document.getElementById('confirmAge').addEventListener('click', function(){
 });
 document.getElementById('denyAge').addEventListener('click', function(){
   window.location.href = 'https://www.google.com';
+});
+
+// Modal / Lightbox para peças
+function openModal(imgSrc, title, subtitle) {
+  document.getElementById('modalImg').src = imgSrc;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalSubtitle').textContent = subtitle;
+  document.getElementById('pecaModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('pecaModal').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+// Fechar modal com tecla ESC
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
 });
 
 // Sports tabs
